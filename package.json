@@ -4,8 +4,7 @@
   "description": "3D Cute Dress Up Game built with Three.js",
   "scripts": {
     "dev": "node server.js",
-    "start": "node server.js",
-    "build": "echo 'static site'"
+    "start": "node server.js"
   },
   "keywords": [
     "threejs",

@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🍓 Cute Anime Girl Dress Up ~ (´｡• ω •｡`)</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    body {
+      overflow: hidden;
+      font-family: 'Comic Sans MS', 'Segoe UI', cursive, sans-serif;
+      background: #ffeef5;
+    }
+    #ui {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 300px;
+      background: rgba(255, 240, 246, 0.94);
+      backdrop-filter: blur(12px);
+      padding: 20px 18px;
+      overflow-y: auto;
+      z-index: 10;
+      border-right: 3px solid #ffb6ce;
+      box-shadow: 4px 0 20px rgba(255, 182, 206, 0.35);
+    }
+    #ui::-webkit-scrollbar {
+      width: 6px;
+    }
+    #ui::-webkit-scrollbar-thumb {
+      background: #ffb6ce;
+      border-radius: 10px;
+    }
+    #ui h1 {
+      color: #ff7fa8;
+      font-size: 21px;
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #ui p.sub {
+      color: #c48ba0;
+      font-size: 12px;
+      margin-bottom: 16px;
+      line-height: 1.35;
+    }
+    .cat {
+      background: #fff;
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(255, 150, 180, 0.15);
+      border: 1px solid rgba(255, 182, 206, 0.4);
+    }
+    .cat h2 {
+      font-size: 13px;
+      color: #ff5f96;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .opts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .opt {
+      padding: 5px 12px;
+      border-radius: 18px;
+      border: 2px solid #ffb6ce;
+      background: #fff;
+      cursor: pointer;
+      font-size: 12px;
+      color: #d46a92;
+      font-weight: bold;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+    .opt:hover {
+      transform: scale(1.05);
+      border-color: #ff7fa8;
+    }
+    .opt.active {
+      background: #ff7fa8;
+      color: #fff;
+      border-color: #ff5f96;
+      box-shadow: 0 2px 6px rgba(255, 127, 168, 0.35);
+    }
+    .swatches {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .sw {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 0 4px #ffb6ce;
+      transition: transform 0.15s ease;
+    }
+    .sw:hover {
+      transform: scale(1.15);
+    }
+    .sw.active {
+      outline: 3px solid #ff5f96;
+      transform: scale(1.1);
+    }
+    #hint {
+      position: fixed;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(6px);
+      padding: 8px 18px;
+      border-radius: 20px;
+      color: #ff7fa8;
+      font-size: 13px;
+      font-weight: bold;
+      z-index: 10;
+      pointer-events: none;
+      box-shadow: 0 2px 12px rgba(255, 182, 206, 0.4);
+      border: 1px solid #ffb6ce;
+    }
+    #bgbtns {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+    }
+    #bgbtns button {
+      border: 2px solid #ffb6ce;
+      background: #fff0f6;
+      border-radius: 20px;
+      padding: 8px 16px;
+      color: #ff5f96;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 2px 8px rgba(255, 182, 206, 0.3);
+      transition: all 0.15s ease;
+    }
+    #bgbtns button:hover {
+      background: #ff7fa8;
+      color: #fff;
+      transform: scale(1.05);
+    }
+    #loadscreen {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: #ffeef5;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      align-items: center;
+      justify-content: center;
+      color: #ff5f96;
+      font-size: 16px;
+      font-weight: bold;
+      transition: opacity 0.3s;
+    }
+    #loadscreen .strawberry {
+      font-size: 64px;
+      animation: wiggle 1s infinite ease-in-out;
+    }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-10deg) scale(1); }
+      50% { transform: rotate(10deg) scale(1.08); }
+    }
+    .progressbar-box {
+      width: 220px;
+      height: 12px;
+      background: #ffd3e2;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid #ffb6ce;
+    }
+    .progressbar-fill {
+      width: 0%;
+      height: 100%;
+      background: #ff5f96;
+      border-radius: 10px;
+      transition: width 0.15s ease;
+    }
+
+    @media (max-width: 600px) {
+      #ui {
+        width: 100%;
+        height: 270px;
+        top: auto;
+        bottom: 0;
+        border-right: none;
+        border-top: 3px solid #ffb6ce;
+      }
+      #hint {
+        top: 14px;
+        bottom: auto;
+      }
+      #bgbtns {
+        top: 14px;
+        bottom: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loadscreen">
+    <div class="strawberry">🍓</div>
+    <div id="loadmsg">Karakter Yükleniyor...</div>
+    <div class="progressbar-box">
+      <div class="progressbar-fill" id="pbar"></div>
+    </div>
+    <div id="ptext" style="font-size: 13px; color: #d46a92;">0%</div>
+  </div>
+
+  <div id="ui">
+    <h1>🍓 Cute Dress Up</h1>
+    <p class="sub">(´｡• ω •｡`) Tatlı anime kız giydirme</p>
+
+    <div class="cat">
+      <h2>✨ Duruş / Poz</h2>
+      <div class="opts" id="poseOpts"></div>
+    </div>
+
+    <div class="cat">
+      <h2>😊 Mimikler / İfade</h2>
+      <div class="opts" id="exprOpts"></div>
+    </div>
+
+    <div class="cat">
+      <h2>🎀 Aksesuarlar</h2>
+      <div class="opts" id="accOpts"></div>
+    </div>
+
+    <div class="cat">
+      <h2>💇 Saç Rengi</h2>
+      <div class="swatches" id="hairColors"></div>
+    </div>
+
+    <div class="cat">
+      <h2>👀 Göz Rengi</h2>
+      <div class="swatches" id="eyeColors"></div>
+    </div>
+
+    <div class="cat">
+      <h2>👗 Kıyafet Rengi</h2>
+      <div class="swatches" id="clothColors"></div>
+    </div>
+  </div>
+
+  <div id="hint">🖱️ sol tık: çevir • tekerlek: zoom • sağ tık: kaydır</div>
+
+  <div id="bgbtns">
+    <button onclick="cycleBg()">🍓 Arka Plan</button>
+    <button onclick="toggleSpin()">🔄 Podyum Döndür</button>
+    <button onclick="takePhoto()">📸 Foto</button>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+        "@pixiv/three-vrm": "https://unpkg.com/@pixiv/three-vrm@2.1.1/lib/three-vrm.module.min.js"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
+
+    // ---------- SAHNE & KAMERA ----------
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 50);
+    camera.position.set(0, 1.25, 2.3);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    document.body.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.target.set(0, 1.12, 0);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.06;
+    controls.minDistance = 0.7;
+    controls.maxDistance = 4.5;
+
+    // Aydınlatma (MToon anime gölgelendirmesi için dengeli)
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    
+    const key = new THREE.DirectionalLight(0xffffff, 1.2);
+    key.position.set(1.5, 3.0, 2.5);
+    key.castShadow = true;
+    key.shadow.mapSize.set(2048, 2048);
+    scene.add(key);
+
+    const fill = new THREE.DirectionalLight(0xffe4ed, 0.5);
+    fill.position.set(-2.0, 2.0, -1.0);
+    scene.add(fill);
+
+    // Arka plan temaları
+    const bgs = [0xfff0f5, 0xfde2ec, 0xe8f6ff, 0xf3e8ff, 0xfff6e0, 0x22222e];
+    let bgI = 0;
+    scene.background = new THREE.Color(bgs[0]);
+    window.cycleBg = () => {
+      bgI = (bgI + 1) % bgs.length;
+      scene.background = new THREE.Color(bgs[bgI]);
+    };
+
+    let autoSpin = false;
+    window.toggleSpin = () => {
+      autoSpin = !autoSpin;
+    };
+
+    // Zemin podyumu
+    const floor = new THREE.Mesh(
+      new THREE.CylinderGeometry(1.4, 1.6, 0.08, 64),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.6 })
+    );
+    floor.position.y = -0.04;
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    // ---------- VRM YÜKLEYİCİ ----------
+    let currentVrm = null;
+    let currentAcc = 'none';
+    let currentPose = 'natural';
+
+    const loader = new GLTFLoader();
+    loader.register((parser) => new VRMLoaderPlugin(parser));
+
+    const loadscreen = document.getElementById('loadscreen');
+    const pbar = document.getElementById('pbar');
+    const ptext = document.getElementById('ptext');
+
+    function updateProgress(percent) {
+      pbar.style.width = percent + '%';
+      ptext.textContent = Math.round(percent) + '%';
+    }
+
+    async function loadVRM() {
+      loadscreen.style.display = 'flex';
+      updateProgress(10);
+
+      try {
+        const gltf = await loader.loadAsync(
+          './model.vrm',
+          (xhr) => {
+            if (xhr.lengthComputable && xhr.total > 0) {
+              const p = (xhr.loaded / xhr.total) * 100;
+              updateProgress(p);
+            }
+          }
+        );
+
+        if (currentVrm) {
+          scene.remove(currentVrm.scene);
+          try { VRMUtils.deepDispose(currentVrm.scene); } catch(e){}
+        }
+
+        const vrm = gltf.userData.vrm;
+        if (!vrm) throw new Error('VRM verisi bulunamadı.');
+        currentVrm = vrm;
+
+        try { VRMUtils.rotateVRM0(vrm); } catch(e){}
+        try { VRMUtils.removeUnnecessaryVertices(gltf.scene); } catch(e){}
+        try { VRMUtils.removeUnnecessaryJoints(gltf.scene); } catch(e){}
+
+        vrm.scene.traverse((o) => {
+          o.castShadow = true;
+          o.receiveShadow = true;
+          if (o.material) o.material.frustumCulled = false;
+        });
+
+        scene.add(vrm.scene);
+
+        // Başlangıç mimik ve aksesuarları
+        buildAcc(currentAcc);
+        setExpression(expr);
+        updateProgress(100);
+        setTimeout(() => { loadscreen.style.display = 'none'; }, 200);
+
+      } catch (err) {
+        console.error('Model yüklenirken hata:', err);
+        loadscreen.style.display = 'none';
+        alert('Model yüklenirken hata oluştu: ' + (err.message || err));
+      }
+    }
+
+    // ---------- İFADELER / MİMİKLER ----------
+    const expressions = [
+      ['happy', '😊 Mutlu'],
+      ['relaxed', '😌 Neşeli'],
+      ['neutral', '🙂 Normal'],
+      ['surprised', '😲 Şaşkın'],
+      ['sad', '🥺 Üzgün'],
+      ['angry', '😠 Kızgın'],
+      ['blink', '😉 Göz Kırp']
+    ];
+    let expr = 'happy';
+
+    function setExpression(name) {
+      expr = name;
+      if (!currentVrm || !currentVrm.expressionManager) return;
+      
+      try {
+        const allExprs = ['happy', 'angry', 'sad', 'relaxed', 'surprised', 'neutral', 'blink', 'aa', 'ih', 'ou', 'ee', 'oh'];
+        allExprs.forEach(k => {
+          try { currentVrm.expressionManager.setValue(k, 0); } catch(e){}
+        });
+
+        if (name !== 'neutral') {
+          currentVrm.expressionManager.setValue(name, 1);
+        }
+      } catch(e) {
+        console.warn('Expression error:', e);
+      }
+    }
+
+    const exprEl = document.getElementById('exprOpts');
+    expressions.forEach(([val, label]) => {
+      const b = document.createElement('button');
+      b.className = 'opt' + (val === 'happy' ? ' active' : '');
+      b.textContent = label;
+      b.onclick = () => {
+        setExpression(val);
+        exprEl.querySelectorAll('.opt').forEach(o => o.classList.remove('active'));
+        b.classList.add('active');
+      };
+      exprEl.appendChild(b);
+    });
+
+    // ---------- POZLAR (DOĞAL, HATASIZ VE ESTETİK) ----------
+    const poseList = [
+      ['natural', '🌸 Doğal Model Duruşu'],
+      ['sway', '✨ Tatlı Salınım'],
+      ['shy', '🥺 Utangaç Duruş'],
+      ['default', '🧍 Orijinal (T-Pose)']
+    ];
+
+    const poseEl = document.getElementById('poseOpts');
+    poseList.forEach(([val, label]) => {
+      const b = document.createElement('button');
+      b.className = 'opt' + (val === 'natural' ? ' active' : '');
+      b.textContent = label;
+      b.onclick = () => {
+        currentPose = val;
+        poseEl.querySelectorAll('.opt').forEach(o => o.classList.remove('active'));
+        b.classList.add('active');
+      };
+      poseEl.appendChild(b);
+    });
+
+    function lerpBone(name, x, y, z, k = 0.12) {
+      try {
+        const n = currentVrm?.humanoid?.getNormalizedBoneNode(name);
+        if (!n) return;
+        n.rotation.x += (x - n.rotation.x) * k;
+        n.rotation.y += (y - n.rotation.y) * k;
+        n.rotation.z += (z - n.rotation.z) * k;
+      } catch(e){}
+    }
+
+    // ---------- AKSESUARLAR ----------
+    const accGroup = new THREE.Group();
+    const accMat = (c, r = 0.45, m = 0.05) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: m });
+
+    function buildAcc(type) {
+      currentAcc = type;
+      while (accGroup.children.length) accGroup.remove(accGroup.children[0]);
+      if (accGroup.parent) accGroup.parent.remove(accGroup);
+      if (!currentVrm || type === 'none') return;
+
+      const head = currentVrm.humanoid?.getNormalizedBoneNode('head');
+      if (!head) return;
+
+      const isVRM0 = currentVrm.meta?.metaVersion === '0' || !currentVrm.meta?.metaVersion;
+      const fwd = isVRM0 ? -1 : 1;
+
+      if (type === 'glasses') {
+        const gRoot = new THREE.Group();
+        const gm = accMat(0x2d222e, 0.25, 0.4);
+        const glassLensMat = new THREE.MeshPhysicalMaterial({
+          color: 0xe0f4ff,
+          transparent: true,
+          opacity: 0.35,
+          roughness: 0.1,
+          transmission: 0.85
+        });
+
+        [-1, 1].forEach(s => {
+          const ring = new THREE.Mesh(new THREE.TorusGeometry(0.021, 0.0024, 12, 32), gm);
+          ring.position.set(s * 0.035, 0, 0);
+          
+          const lens = new THREE.Mesh(new THREE.CircleGeometry(0.020, 24), glassLensMat);
+          lens.position.set(s * 0.035, 0, 0);
+
+          const temple = new THREE.Mesh(new THREE.CylinderGeometry(0.0015, 0.0015, 0.085, 8), gm);
+          temple.position.set(s * 0.056, 0.002, -fwd * 0.042);
+          temple.rotation.x = Math.PI / 2;
+          temple.rotation.y = s * -0.06;
+
+          gRoot.add(ring, lens, temple);
+        });
+
+        const bridge = new THREE.Mesh(new THREE.CylinderGeometry(0.002, 0.002, 0.02, 8), gm);
+        bridge.rotation.z = Math.PI / 2;
+        bridge.position.set(0, 0.004, 0);
+        gRoot.add(bridge);
+
+        gRoot.position.set(0, 0.06, fwd * 0.096);
+        accGroup.add(gRoot);
+
+      } else if (type === 'bow') {
+        const bowRoot = new THREE.Group();
+        [-1, 1].forEach(p => {
+          const petal = new THREE.Mesh(new THREE.SphereGeometry(0.026, 20, 20), accMat(0xff5f96, 0.4));
+          petal.scale.set(1.4, 0.75, 0.45);
+          petal.position.x = p * 0.022;
+          petal.rotation.z = p * 0.18;
+          bowRoot.add(petal);
+        });
+        const knot = new THREE.Mesh(new THREE.SphereGeometry(0.011, 16, 16), accMat(0xff2d75, 0.4));
+        bowRoot.add(knot);
+
+        [-1, 1].forEach(s => {
+          const ribbon = new THREE.Mesh(new THREE.ConeGeometry(0.007, 0.035, 16), accMat(0xff5f96, 0.4));
+          ribbon.position.set(s * 0.01, -0.025, 0);
+          ribbon.rotation.z = s * 0.32;
+          bowRoot.add(ribbon);
+        });
+
+        bowRoot.position.set(0.085, 0.13, fwd * 0.035);
+        bowRoot.rotation.set(0.1, fwd * -0.25, -0.32);
+        accGroup.add(bowRoot);
+
+      } else if (type === 'cat') {
+        const catRoot = new THREE.Group();
+        [-1, 1].forEach(s => {
+          const earGroup = new THREE.Group();
+          
+          const outer = new THREE.Mesh(new THREE.ConeGeometry(0.032, 0.065, 18), accMat(0xff7fa8, 0.5));
+          outer.scale.set(1.1, 1, 0.6);
+          
+          const inner = new THREE.Mesh(new THREE.ConeGeometry(0.02, 0.046, 16), accMat(0xffd5e5, 0.6));
+          inner.scale.set(1.0, 1, 0.5);
+          inner.position.set(0, -0.004, fwd * 0.006);
+
+          earGroup.add(outer, inner);
+          earGroup.position.set(s * 0.07, 0.175, fwd * 0.01);
+          earGroup.rotation.set(0.05, 0, s * -0.28);
+          catRoot.add(earGroup);
+        });
+
+        accGroup.add(catRoot);
+
+      } else if (type === 'crown') {
+        const crownRoot = new THREE.Group();
+        const goldMat = new THREE.MeshStandardMaterial({
+          color: 0xffd000,
+          metalness: 0.85,
+          roughness: 0.25
+        });
+        const rubyMat = new THREE.MeshStandardMaterial({
+          color: 0xff1e60,
+          metalness: 0.2,
+          roughness: 0.1
+        });
+
+        const band = new THREE.Mesh(new THREE.TorusGeometry(0.052, 0.005, 12, 40), goldMat);
+        band.rotation.x = Math.PI / 2;
+        band.position.y = 0.005;
+        crownRoot.add(band);
+
+        for (let i = 0; i < 5; i++) {
+          const a = (i / 5) * Math.PI * 2;
+          const isFront = (i === 0);
+          const spikeH = isFront ? 0.036 : 0.026;
+          
+          const spike = new THREE.Mesh(new THREE.ConeGeometry(0.009, spikeH, 8), goldMat);
+          spike.position.set(Math.cos(a) * 0.052, spikeH / 2 + 0.005, Math.sin(a) * 0.052);
+          spike.rotation.y = -a + Math.PI / 2;
+          crownRoot.add(spike);
+
+          if (isFront) {
+            const gem = new THREE.Mesh(new THREE.SphereGeometry(0.0055, 12, 12), rubyMat);
+            gem.position.set(Math.cos(a) * 0.056, 0.016, Math.sin(a) * 0.056);
+            crownRoot.add(gem);
+          }
+        }
+
+        crownRoot.position.set(0, 0.18, fwd * 0.01);
+        accGroup.add(crownRoot);
+
+      } else if (type === 'flower') {
+        const flowerRoot = new THREE.Group();
+        const petalMat = accMat(0xffb6ce, 0.5);
+        const centerMat = accMat(0xffea7a, 0.4);
+
+        for (let i = 0; i < 5; i++) {
+          const a = (i / 5) * Math.PI * 2;
+          const petal = new THREE.Mesh(new THREE.SphereGeometry(0.015, 16, 16), petalMat);
+          petal.scale.set(1.4, 0.9, 0.4);
+          petal.position.set(Math.cos(a) * 0.016, Math.sin(a) * 0.016, 0);
+          petal.rotation.z = a;
+          flowerRoot.add(petal);
+        }
+        const center = new THREE.Mesh(new THREE.SphereGeometry(0.009, 16, 16), centerMat);
+        flowerRoot.add(center);
+
+        flowerRoot.position.set(-0.082, 0.12, fwd * 0.035);
+        flowerRoot.rotation.set(0.1, fwd * 0.3, 0.25);
+        accGroup.add(flowerRoot);
+      }
+
+      head.add(accGroup);
+    }
+
+    const accEl = document.getElementById('accOpts');
+    [
+      ['none', 'Yok'],
+      ['glasses', '👓 Gözlük'],
+      ['bow', '🎀 Fiyonk'],
+      ['cat', '🐱 Kedi'],
+      ['crown', '👑 Taç'],
+      ['flower', '🌸 Çiçek']
+    ].forEach(([val, label], i) => {
+      const b = document.createElement('button');
+      b.className = 'opt' + (val === 'none' ? ' active' : '');
+      b.textContent = label;
+      b.onclick = () => {
+        buildAcc(val);
+        accEl.querySelectorAll('.opt').forEach(o => o.classList.remove('active'));
+        b.classList.add('active');
+      };
+      accEl.appendChild(b);
+    });
+
+    // ---------- RENK ÖZELLEŞTİRME ----------
+    function recolor(matKeyword, hex) {
+      if (!currentVrm) return;
+      currentVrm.scene.traverse((o) => {
+        if (!o.material) return;
+        const mats = Array.isArray(o.material) ? o.material : [o.material];
+        mats.forEach((m) => {
+          const n = (m.name || '').toLowerCase();
+          if (n.includes(matKeyword.toLowerCase())) {
+            if (m.color) m.color.setHex(hex);
+            if (m.uniforms && m.uniforms.litFactor) m.uniforms.litFactor.value.setHex(hex);
+          }
+        });
+      });
+    }
+
+    function setupSwatches(id, colors, cb) {
+      const el = document.getElementById(id);
+      colors.forEach((c) => {
+        const s = document.createElement('div');
+        s.className = 'sw';
+        s.style.background = '#' + c.toString(16).padStart(6, '0');
+        s.onclick = () => {
+          el.querySelectorAll('.sw').forEach(o => o.classList.remove('active'));
+          s.classList.add('active');
+          cb(c);
+        };
+        el.appendChild(s);
+      });
+    }
+
+    // Saç (N00_000_Hair_00_HAIR_01)
+    setupSwatches('hairColors', [0x4a3a4a, 0xff9ec4, 0x8ecae6, 0xffe08a, 0xb08ae8, 0xffffff, 0x222222], (c) => {
+      recolor('hair_00_hair', c);
+    });
+
+    // Göz İrisi (N00_000_00_EyeIris_00_EYE)
+    setupSwatches('eyeColors', [0x7ec4e8, 0xff7fa8, 0x88c47e, 0xb08ae8, 0xe8b04a, 0x444455], (c) => {
+      recolor('eyeiris', c);
+    });
+
+    // Hırka & Kıyafet (N00_001_02_Bottoms_01_CLOTH)
+    setupSwatches('clothColors', [0xffffff, 0xff9ec4, 0xa8d8ff, 0xfff3a8, 0xc4a8ff, 0xffb38a, 0x2c3e50], (c) => {
+      recolor('cloth', c);
+    });
+
+    // Fotoğraf Çekme
+    window.takePhoto = () => {
+      const a = document.createElement('a');
+      a.download = 'cute-anime-girl.png';
+      a.href = renderer.domElement.toDataURL('image/png');
+      a.click();
+    };
+
+    // ---------- ANİMASYON DÖNGÜSÜ ----------
+    const clock = new THREE.Clock();
+    let blinkTimer = 0;
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Fizik patlamalarını önlemek için delta süresini sınırla
+      const d = Math.min(clock.getDelta(), 0.033);
+      const t = clock.getElapsedTime();
+
+      if (autoSpin && currentVrm) {
+        currentVrm.scene.rotation.y += 0.01;
+      }
+
+      if (currentVrm) {
+        // Yumuşak doğal nefes alma
+        const breath = Math.sin(t * 1.5) * 0.003;
+        currentVrm.scene.position.y = breath;
+
+        // ---------- ESTETİK & SIFIR HATALI POZLAR ----------
+        if (currentPose === 'natural') {
+          // 🌸 Doğal Model Duruşu: Kollar yanda pürüzsüz ve rahat, hafif nefes
+          lerpBone('leftUpperArm', 0, 0, 1.25);
+          lerpBone('rightUpperArm', 0, 0, -1.25);
+          lerpBone('leftLowerArm', 0, 0, 0);
+          lerpBone('rightLowerArm', 0, 0, 0);
+          lerpBone('leftHand', 0, 0, 0);
+          lerpBone('rightHand', 0, 0, 0);
+          lerpBone('head', 0, 0, 0);
+          lerpBone('spine', 0, 0, 0);
+          lerpBone('neck', 0, 0, 0);
+
+        } else if (currentPose === 'sway') {
+          // ✨ Tatlı Idol Salınımı: Kollar yanda, omuz ve baş hafif tatlı salınır
+          lerpBone('leftUpperArm', 0, 0, 1.22);
+          lerpBone('rightUpperArm', 0, 0, -1.22);
+          lerpBone('leftLowerArm', 0, 0, 0);
+          lerpBone('rightLowerArm', 0, 0, 0);
+          lerpBone('spine', 0, 0, Math.sin(t * 1.8) * 0.025);
+          lerpBone('neck', 0, 0, -Math.sin(t * 1.8) * 0.025);
+          lerpBone('head', 0, Math.sin(t * 1.0) * 0.05, Math.sin(t * 1.2) * 0.04);
+
+        } else if (currentPose === 'shy') {
+          // 🥺 Utangaç Duruş: Kollar hafif öne doğru, baş hafif eğik sevimli bakış
+          lerpBone('leftUpperArm', 0.12, 0.0, 1.22);
+          lerpBone('rightUpperArm', 0.12, 0.0, -1.22);
+          lerpBone('leftLowerArm', 0, 0, 0);
+          lerpBone('rightLowerArm', 0, 0, 0);
+          lerpBone('spine', 0, 0, 0);
+          lerpBone('neck', 0, 0, 0);
+          lerpBone('head', 0.06, 0, -0.05);
+
+        } else {
+          // 'default' - Orijinal T-Pose
+          lerpBone('leftUpperArm', 0, 0, 0);
+          lerpBone('rightUpperArm', 0, 0, 0);
+          lerpBone('leftLowerArm', 0, 0, 0);
+          lerpBone('rightLowerArm', 0, 0, 0);
+          lerpBone('leftHand', 0, 0, 0);
+          lerpBone('rightHand', 0, 0, 0);
+          lerpBone('head', 0, 0, 0);
+          lerpBone('spine', 0, 0, 0);
+          lerpBone('neck', 0, 0, 0);
+        }
+
+        // Doğal göz kırpma
+        if (expr === 'neutral' || expr === 'happy') {
+          blinkTimer -= d;
+          if (blinkTimer <= 0) {
+            blinkTimer = 2.5 + Math.random() * 3;
+            try {
+              currentVrm.expressionManager?.setValue('blink', 1);
+              setTimeout(() => {
+                currentVrm?.expressionManager?.setValue('blink', 0);
+              }, 140);
+            } catch(e){}
+          }
+        }
+
+        try { currentVrm.update(d); } catch(e){}
+      }
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Başlat
+    loadVRM();
+  </script>
+</body>
+</html>
